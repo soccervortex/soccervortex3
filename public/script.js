@@ -27,23 +27,18 @@ function updateLeagueLogo(select) {
 
 async function fetchSoccerData(league) {
   try {
-      const response = await fetch(`/api/soccer-data?league=${league}`);
-      
-      // Check if the response is okay
-      if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log(data); // Log the returned data for debugging
-
-      // Process your data as needed (e.g., call displayData)
-      await displayData(data.matches);
+    const response = await fetch(`/soccer-data?league=${league}`);
+    const data = await response.json();
+    
+    // Log the entire matches array to inspect the structure
+    console.log(data.matches);
+    
+    // Process the data as usual
+    await displayData(data.matches); // Ensure displayData is awaited
   } catch (error) {
-      console.error('Error fetching data:', error);
+    console.error('Error fetching data:', error);
   }
 }
-
 
 // Map of statuses for user-friendly display
 const statusMapping = {
