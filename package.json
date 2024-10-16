@@ -1,19 +1,12 @@
 {
-  "name": "soccer-wesbite",
+  "name": "soccer-website",
   "version": "1.0.0",
-  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "dev": "vercel dev",
+    "build": "echo 'Building for Vercel'",
+    "start": "vercel dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.7",
-    "cors": "^2.8.5",
-    "express": "^4.21.1",
-    "node-fetch": "^3.3.2"
-  },
-  "description": ""
+    "axios": "^0.21.1"
+  }
 }

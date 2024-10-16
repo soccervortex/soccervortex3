@@ -16,12 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchLiveMatches(league) {
     try {
-        const response = await fetch(`/soccer-data?league=${league}`);
+        // Fetch live matches for the specified league from the API
+        const response = await fetch(`/api/soccer-data?league=${league}`);
+
+        // Check if the response is OK (status code 200)
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the JSON data from the response
         const data = await response.json();
-        console.log(data.matches);
-        displayLiveMatches(data.matches);
+
+        // Check if there are any matches in the response
+        if (data.matches && data.matches.length > 0) {
+            console.log(data.matches); // Log the matches to the console for debugging
+            displayLiveMatches(data.matches); // Call the function to display matches
+        } else {
+            console.log('No live matches found for this league.'); // Handle case with no matches
+        }
     } catch (error) {
-        console.error('Error fetching live matches:', error);
+        console.error('Error fetching live matches:', error); // Log any errors that occur during fetch
     }
 }
 
