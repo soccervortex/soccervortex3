@@ -1,5 +1,16 @@
-// api/soccer-data.js
-import axios from 'axios';
+// server.js
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const path = require('path');
+const app = express();
+const PORT = 3000;
+
+// Enable CORS
+app.use(cors());
+
+// Serve static files from the "public" directory
+app.use(express.static('public'));
 
 // Endpoint to fetch soccer data
 const apiKey = '1d171366cdf64118b495dba4cf37603f'; // Replace with your Football Data API key
@@ -37,7 +48,7 @@ const leagueLogos = {
     WC: 'images/leagues/world-cup.png',
 };
 
-// Club logos mapping
+// Club logos mapping with example IDs; replace with actual IDs
 const clubsLogos = {
     66: 'images/clubs/manutd.png',
     63: 'images/clubs/fulham.png',
@@ -125,7 +136,7 @@ const clubsLogos = {
     // Add additional mappings for club IDs and logo paths
 };
 
-export default async function handler(req, res) {
+app.get('/soccer-data', async (req, res) => {
     const league = req.query.league;
     const apiUrl = leagueUrls[league];
 
@@ -147,8 +158,21 @@ export default async function handler(req, res) {
             };
         });
 
-        res.status(200).json({ matches: matchesWithLogos });
+        res.json({ matches: matchesWithLogos });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+});
+
+// Route for the live matches URL
+app.get('/live-matches', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'live.html')); // Serve the live-matches.html file
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
