@@ -25,21 +25,25 @@ function updateLeagueLogo(select) {
   }
 }
 
-async function fetchSoccerData(league) {
-  try {
-    const response = await fetch(`/api/soccer-data?league=${league}`);
-    
-    if (!response.headers.get('content-type')?.includes('application/json')) {
-      const errorText = await response.text();
-      throw new Error(`Invalid JSON response: ${errorText}`);
-    }
-    
-    const data = await response.json();
-    console.log(data.matches);
-    await displayData(data.matches);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+function fetchSoccerData(league) {
+  fetch(`/api/soccer-data?league=${league}`)
+    .then(response => {
+      // Check if response is OK
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(`Error: ${response.status} - ${text}`);
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Assuming 'data.matches' is an array of matches
+      console.log(data.matches);
+      displayData(data.matches); // Call displayData without await
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
 }
 
 // Map of statuses for user-friendly display
