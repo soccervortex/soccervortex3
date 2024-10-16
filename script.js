@@ -27,14 +27,11 @@ function updateLeagueLogo(select) {
 
 async function fetchSoccerData(league) {
   try {
-    const response = await fetch(`/soccer-data?league=${league}`);
+    const response = await fetch(`/api/soccer-data?league=${league}`);
     const data = await response.json();
     
-    // Log the entire matches array to inspect the structure
     console.log(data.matches);
-    
-    // Process the data as usual
-    await displayData(data.matches); // Ensure displayData is awaited
+    await displayData(data.matches);
   } catch (error) {
     console.error('Error fetching data:', error);
   }
