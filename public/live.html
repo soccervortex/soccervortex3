@@ -1,44 +1,80 @@
-<!-- live-matches.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Soccer Matches</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="live-styles.css"> <!-- New CSS for live matches -->
-    <title>Live Matches</title>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="live.html" class="navbar-brand">Soccer Data</a>
-            <ul class="navbar-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="live.html">Live Matches</a></li>
-            </ul>
-        </div>
-    </nav>
-    <div class="container">
-        <h1>Live Matches</h1>
-        <div class="custom-select-wrapper">
-            <select id="league-select" onchange="updateLeagueLogo(this)">
-                <option value="PL" data-logo="images/leagues/premier-league.png">Premier League</option>
-                <option value="CL" data-logo="images/leagues/champions-league.png">Champions League</option>
-                <option value="BL1" data-logo="images/leagues/bundesliga.png">Bundesliga</option>
-                <option value="DED" data-logo="images/leagues/eredivisie.png">Eredivisie</option>
-                <option value="BSA" data-logo="images/leagues/campeonato-brasileiro.png">Campeonato Brasileiro</option>
-                <option value="PD" data-logo="images/leagues/la-liga.png">La Liga</option>
-                <option value="FL1" data-logo="images/leagues/ligue-1.png">Ligue 1</option>
-                <option value="ELC" data-logo="images/leagues/championship.png">Championship</option>
-                <option value="PPL" data-logo="images/leagues/primeira-liga.png">Primeira Liga</option>
-                <option value="EC" data-logo="images/leagues/european-championship.png">European Championship</option>
-                <option value="SA" data-logo="images/leagues/serie-a.png">Serie A</option>
-                <option value="CLI" data-logo="images/leagues/copa-libertadores.png">Copa Libertadores</option>
-                <option value="WC" data-logo="images/leagues/world-cup.png">World Cup</option>
-            </select>
-        </div>
-        <div id="live-soccer-data"></div>
-    </div>
-    <script src="live-script.js"></script> <!-- New JS for live matches -->
+    <h1>Live Soccer Matches</h1>
+    
+    <label for="league-select">Choose a league:</label>
+    <select id="league-select">
+        <option value="PL">Premier League</option>
+        <option value="CL">Champions League</option>
+        <option value="BL1">Bundesliga</option>
+        <option value="DED">Eredivisie</option>
+        <option value="BSA">Campeonato Brasileiro</option>
+        <option value="PD">La Liga</option>
+        <option value="FL1">Ligue 1</option>
+        <option value="ELC">Championship</option>
+        <option value="PPL">Primeira Liga</option>
+        <option value="EC">European Championship</option>
+        <option value="SA">Serie A</option>
+        <option value="CLI">Copa Libertadores</option>
+        <option value="WC">World Cup</option>
+    </select>
+
+    <button id="fetch-live-matches">Fetch Live Matches</button>
+    
+    <div id="live-matches"></div>
+
+    <script>
+        async function fetchLiveMatches(league) {
+            try {
+                const response = await fetch(`/api/soccer-data?league=${league}`);
+                const data = await response.json();
+                
+                const matchesDiv = document.getElementById('live-matches');
+                matchesDiv.innerHTML = ''; // Clear any previous matches
+
+                if (data.error) {
+                    matchesDiv.innerHTML = `<p>${data.error}</p>`;
+                    return;
+                }
+
+                // Filter only live matches
+                const liveMatches = data.matches.filter(match => match.status === 'LIVE');
+                
+                if (liveMatches.length === 0) {
+                    matchesDiv.innerHTML = '<p>No live matches currently.</p>';
+                    return;
+                }
+
+                liveMatches.forEach(match => {
+                    matchesDiv.innerHTML += `
+                        <div>
+                            <h2>${match.homeTeam.name} vs ${match.awayTeam.name}</h2>
+                            <p>Score: ${match.score.fullTime.home} - ${match.score.fullTime.away}</p>
+                            <p>Status: ${match.status.charAt(0).toUpperCase() + match.status.slice(1).toLowerCase()}</p>
+                            <img src="${match.homeTeamLogo}" alt="${match.homeTeam.name} logo" width="50">
+                            <img src="${match.awayTeamLogo}" alt="${match.awayTeam.name} logo" width="50">
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error fetching live matches:', error);
+            }
+        }
+
+        document.getElementById('fetch-live-matches').addEventListener('click', () => {
+            const selectedLeague = document.getElementById('league-select').value;
+            fetchLiveMatches(selectedLeague);
+        });
+
+        // Fetch live matches for the default league on initial load
+        fetchLiveMatches('PL'); // You can change this to another league if needed
+    </script>
 </body>
 </html>
