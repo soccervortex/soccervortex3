@@ -1,9 +1,9 @@
-// api/soccer-data.js
+// soccer-data.js
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   const { league } = req.query;
-  const apiKey = process.env.FOOTBALL_API_KEY; // Use environment variable for the API key
+  const apiKey = process.env.FOOTBALL_API_KEY;
 
   if (!league) {
     res.status(400).json({ error: 'League parameter is required' });
@@ -18,7 +18,8 @@ export default async function handler(req, res) {
     });
     
     if (!response.ok) {
-      res.status(response.status).json({ error: 'Failed to fetch data from Football-Data API' });
+      const errorText = await response.text();
+      res.status(response.status).json({ error: 'Failed to fetch data from Football-Data API', details: errorText });
       return;
     }
 

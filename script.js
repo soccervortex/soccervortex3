@@ -28,8 +28,13 @@ function updateLeagueLogo(select) {
 async function fetchSoccerData(league) {
   try {
     const response = await fetch(`/api/soccer-data?league=${league}`);
-    const data = await response.json();
     
+    if (!response.headers.get('content-type')?.includes('application/json')) {
+      const errorText = await response.text();
+      throw new Error(`Invalid JSON response: ${errorText}`);
+    }
+    
+    const data = await response.json();
     console.log(data.matches);
     await displayData(data.matches);
   } catch (error) {
